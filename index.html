@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正德國中7年18班 段考時程儀表板</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0f172a;      
+            --secondary: #334155;    
+            --bg: #f1f5f9;           
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; font-family: "Microsoft JhengHei", sans-serif; margin: 0; padding: 0; }
+        body { background-color: var(--bg); color: var(--primary); width: 100vw; height: 100vh; overflow: hidden; display: flex; flex-direction: column; padding: 1.5vh 1.5vw; gap: 1.5vh; }
+
+        /* 頂部標題與選單 */
+        .main-header {
+            text-align: center; height: 7vh; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 3.2vw; font-weight: 900;
+        }
+        .header-select {
+            font-size: 2.8vw; font-weight: 900; border: none; background: #e2e8f0; border-radius: 8px; padding: 0 10px; cursor: pointer; color: var(--primary); outline: none;
+        }
+
+        /* 頂部資訊卡 */
+        .top-row { display: flex; gap: 1.5vw; height: 18vh; }
+        .info-card { 
+            flex: 1; background: var(--card-bg); border-radius: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid var(--border); 
+            border-bottom: 8px solid var(--secondary); position: relative;
+            display: flex; align-items: center; justify-content: center; 
+        }
+        
+        .top-display-text {
+            font-family: "Arial", "Microsoft JhengHei", sans-serif; 
+            font-size: 4.8vw; 
+            font-weight: 900; 
+            color: var(--primary); 
+            text-align: center;
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .date-wrapper {
+            display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative;
+        }
+        
+        .calendar-icon-btn { position: absolute; right: 2vw; font-size: 4vh; color: #94a3b8; pointer-events: none; }
+        input[type="date"] {
+            position: absolute; right: 1.5vw; width: 50px; height: 50px; opacity: 0; cursor: pointer; z-index: 10;
+        }
+
+        /* 主區塊佈局 */
+        .main-row { display: flex; gap: 1.5vw; flex: 1; min-height: 0; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 1.5vh 1.2vw; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; flex-direction: column; border: 1px solid var(--border); }
+        
+        .schedule-part { flex: 5.5; }
+        .stats-part { flex: 1.8; text-align: center; } 
+        .seating-part { flex: 2.7; }
+
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1vh; border-bottom: 2px solid var(--bg); padding-bottom: 1vh; }
+        .card-title { font-size: 2.2vh; font-weight: 900; color: var(--secondary); }
+
+        /* 表格與科目選單 強制顯色設計 */
+        table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { font-size: 1.8vh; color: #94a3b8; text-align: center; padding-bottom: 1vh; }
+        td { font-size: 3.8vh; font-weight: 900; text-align: center; vertical-align: middle; border-bottom: 1px solid var(--border); outline: none; padding: 0; }
+
+        select.subject-select {
+            width: 100%; height: 100%; 
+            border: none; 
+            font-size: 3.8vh; 
+            font-weight: 900; 
+            text-align: center; 
+            text-align-last: center; 
+            cursor: pointer; 
+            outline: none;
+            display: block;
+            -webkit-appearance: none; 
+            -moz-appearance: none; 
+            appearance: none;
+            background-color: transparent !important;
+        }
+
+        /* 出缺席統計 */
+        .stats-container { display: flex; flex-direction: column; justify-content: space-around; height: 100%; align-items: center; }
+        .stat-box { text-align: center; width: 100%; padding: 0.5vh 0; }
+        .stat-label { font-size: 2vh; color: #64748b; font-weight: bold; margin-bottom: 0.5vh; letter-spacing: 2px;}
+        .stat-num-input { font-size: 5.5vh; font-weight: 900; border: none; width: 80%; text-align: center; outline: none; background: #f8fafc; border-radius: 8px; color: var(--primary); }
+        
+        /* 缺席座號 */
+        .absent-container { 
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 5px; 
+            min-height: 5vh; border: 2px dashed #cbd5e1; border-radius: 8px; padding: 8px;
+        }
+        .absent-input { 
+            width: 55px; height: 45px; text-align: center; 
+            font-size: 3.5vh; font-weight: 900; border: 1px solid #cbd5e1; border-radius: 6px; color: #e11d48; background: #fff;
+            outline: none;
+        }
+
+        /* 座位表 */
+        .seating-box { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; margin-top: 0.5vh; }
+        .grid-engine { display: grid; gap: 6px; width: 100%; height: 100%; }
+        .seat { background: #fcfdfe; border: 2px solid var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: clamp(14px, 1.4vw, 3vh); font-weight: 900; color: #475569; outline: none; }
+
+        .footer-banner { height: 6vh; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 0 2vw; font-size: 2.2vh; font-weight: 900; color: var(--secondary); border-left: 10px solid var(--secondary); outline: none; }
+    </style>
+</head>
+<body>
+
+    <div class="main-header">
+        正德國中 
+        <select class="header-select" id="grade-sel"><option>7</option><option>8</option><option>9</option></select> 年 
+        <select class="header-select" id="class-sel"></select> 班 段考時程表
+    </div>
+
+    <div class="top-row">
+        <div class="info-card">
+            <div class="date-wrapper">
+                <div id="date-text" class="top-display-text">加載中...</div>
+                <i class="fa-regular fa-calendar calendar-icon-btn"></i>
+                <input type="date" id="date-picker">
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="top-display-text" id="clock">00:00:00</div>
+        </div>
+    </div>
+
+    <div class="main-row">
+        <div class="card schedule-part">
+            <div class="card-header">
+                <span class="card-title">今日考程</span>
+                <div style="font-size: 1.4vh; font-weight: bold; color: #94a3b8;">
+                    節次 <input type="number" id="input-periods" value="7" min="1" max="7" style="width:3vw; text-align:center;">
+                    <button onclick="generateSchedule()" style="background:#334155; color:white; border:none; padding:2px 8px; border-radius:4px; cursor:pointer;">設定</button>
+                </div>
+            </div>
+            <table>
+                <thead><tr><th style="width:12%">節次</th><th style="width:38%">時間</th><th style="width:25%">科目</th><th style="width:25%">備註</th></tr></thead>
+                <tbody id="schedule-body"></tbody>
+            </table>
+        </div>
+
+        <div class="card stats-part">
+            <div class="card-header" style="justify-content: center;"><span class="card-title">出缺席統計</span></div>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-label">應到人數</div>
+                    <input type="number" id="total-students" value="30" class="stat-num-input" oninput="calcAbsent()">
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">實到人數</div>
+                    <input type="number" id="present-students" value="22" class="stat-num-input" style="color: #059669;" oninput="calcAbsent()">
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label" style="color: #e11d48;">缺席座號</div>
+                    <div id="absent-inputs" class="absent-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card seating-part">
+            <div class="card-header">
+                <span class="card-title">座位表</span>
+                <div style="font-size:1.2vh;">
+                    <input type="number" id="input-rows" value="6" style="width:2.5vw; text-align:center;">×<input type="number" id="input-cols" value="6" style="width:2.5vw; text-align:center;">
+                    <button onclick="generateGrid()" style="background:#334155; color:white; border:none; padding:2px 6px; border-radius:4px; cursor:pointer;">生成</button>
+                </div>
+            </div>
+            <div style="text-align:center; font-size:1.4vh; color:#94a3b8; font-weight:bold; margin-bottom:0.5vh;">講台方向 ▲</div>
+            <div class="seating-box"><div class="grid-engine" id="seating-container"></div></div>
+        </div>
+    </div>
+
+    <div class="footer-banner" contenteditable="true">提醒：考前確實關機；作文用黑筆，其他科目用 2B 鉛筆；手機務必關機放入書包。</div>
+
+<script>
+    const classSel = document.getElementById('class-sel');
+    for(let i=1; i<=50; i++) {
+        let opt = document.createElement('option');
+        opt.value = i; opt.innerText = i;
+        if(i === 18) opt.selected = true;
+        classSel.appendChild(opt);
+    }
+
+    function updateClock() {
+        document.getElementById('clock').textContent = new Date().toTimeString().split(' ')[0];
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const days = ['(日)', '(一)', '(二)', '(三)', '(四)', '(五)', '(六)'];
+    const picker = document.getElementById('date-picker');
+    const display = document.getElementById('date-text');
+
+    picker.onchange = function() {
+        if(!this.value) return;
+        const d = new Date(this.value);
+        display.textContent = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}${days[d.getDay()]}`;
+    };
+    const today = new Date();
+    picker.value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+    picker.onchange();
+
+    function calcAbsent() {
+        const total = parseInt(document.getElementById('total-students').value) || 0;
+        const present = parseInt(document.getElementById('present-students').value) || 0;
+        const absentCount = Math.max(0, total - present);
+        const container = document.getElementById('absent-inputs');
+        container.innerHTML = '';
+        for(let i=0; i<absentCount; i++) {
+            let input = document.createElement('input');
+            input.type = 'number';
+            input.className = 'absent-input';
+            container.appendChild(input);
+        }
+    }
+
+    const timeTable = { 1: "08:20-09:05", 2: "09:15-10:00", 3: "10:10-10:55", 4: "11:05-11:50", 5: "13:00-13:45", 6: "13:55-14:40", 7: "15:00-15:45" };
+    const subjects = ["自習", "國文", "英文", "數學", "自然", "社會", "作文"];
+    
+    const subjectColors = {
+        "自習": { bg: "#ffffff", fg: "#94a3b8" },
+        "國文": { bg: "#fee2e2", fg: "#991b1b" },
+        "英文": { bg: "#e0f2fe", fg: "#075985" },
+        "數學": { bg: "#dcfce7", fg: "#166534" },
+        "自然": { bg: "#f3e8ff", fg: "#6b21a8" },
+        "社會": { bg: "#ffedd5", fg: "#9a3412" },
+        "作文": { bg: "#fef9c3", fg: "#854d0e" }
+    };
+
+    function applySubjectColor(selectElement) {
+        const color = subjectColors[selectElement.value];
+        const tdElement = selectElement.parentElement;
+        tdElement.style.setProperty("background-color", color.bg, "important");
+        selectElement.style.setProperty("color", color.fg, "important");
+        selectElement.style.fontWeight = (selectElement.value === "自習") ? "bold" : "900";
+    }
+
+    function generateSchedule() {
+        const count = document.getElementById('input-periods').value;
+        const body = document.getElementById('schedule-body');
+        body.innerHTML = '';
+        for(let i = 1; i <= count; i++) {
+            const row = document.createElement('tr');
+            const cellSub = document.createElement('td');
+            const select = document.createElement('select');
+            select.className = "subject-select";
+            subjects.forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name; opt.innerText = name;
+                select.appendChild(opt);
+            });
+            select.onchange = function() { applySubjectColor(this); };
+            cellSub.appendChild(select);
+            row.innerHTML = `<td>${i}</td><td contenteditable="true">${timeTable[i] || ""}</td>`;
+            row.appendChild(cellSub);
+            row.innerHTML += `<td contenteditable="true"></td>`;
+            body.appendChild(row);
+            applySubjectColor(select);
+        }
+    }
+
+    function generateGrid() {
+        const rows = document.getElementById('input-rows').value;
+        const cols = document.getElementById('input-cols').value;
+        const container = document.getElementById('seating-container');
+        container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+        container.innerHTML = '';
+        for(let i = 0; i < rows * cols; i++) {
+            const seat = document.createElement('div');
+            seat.className = 'seat'; seat.contentEditable = 'true';
+            container.appendChild(seat);
+        }
+    }
+
+    generateSchedule();
+    generateGrid();
+    calcAbsent();
+</script>
+</body>
+</html>
