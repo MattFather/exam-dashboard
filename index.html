@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正德國中段考管理系統 - 完美修復版</title>
+    <title>正德國中段考管理系統 - 標題平齊版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -18,8 +18,9 @@
         body { background-color: var(--bg); color: var(--primary); width: 100vw; height: 100vh; overflow: hidden; display: flex; flex-direction: column; padding: 1vh 1.5vw; gap: 1.5vh; }
 
         /* 頂部標題 */
-        .main-header { text-align: center; height: 6vh; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 2.8vw; font-weight: 900; }
-        .header-select { font-size: 2.5vw; font-weight: 900; border: none; background: #e2e8f0; border-radius: 8px; padding: 0 10px; cursor: pointer; color: var(--primary); outline: none; }
+        .main-header { text-align: center; height: 6vh; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 2.8vw; font-weight: 900; }
+        /* 統一字體大小：將選單的 font-size 改為與標題一致的 2.8vw */
+        .header-select { font-size: 2.8vw; font-weight: 900; border: none; background: #e2e8f0; border-radius: 8px; padding: 0 10px; cursor: pointer; color: var(--primary); outline: none; }
 
         /* 頂部資訊卡 */
         .top-row { display: flex; gap: 1.5vw; height: 10vh; }
@@ -100,9 +101,17 @@
 <body>
 
     <div class="main-header">
-        正德國中 
-        <select class="header-select" id="grade-sel"><option>7</option><option>8</option><option>9</option></select> 年 
-        <select class="header-select" id="class-sel"></select> 班 段考時程表
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+            正德國中 
+            <select class="header-select" id="grade-sel"><option>7</option><option>8</option><option>9</option></select> 年 
+            <select class="header-select" id="class-sel"></select> 班 
+            <select class="header-select" id="exam-type-sel" style="text-align: right; text-align-last: right;">
+                <option>段考</option>
+                <option>藝能科考試</option>
+                <option>模擬考</option>
+            </select>
+            時程表
+        </div>
     </div>
 
     <div class="top-row">
@@ -182,7 +191,7 @@
             <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
             
             <div class="mode-toggle">
-                <button id="mode-single" class="mode-btn active" onclick="setSubjMode('single')">單科目 (段考、模考)</button>
+                <button id="mode-single" class="mode-btn active" onclick="setSubjMode('single')">單科目 (段考/模擬考)</button>
                 <button id="mode-multi" class="mode-btn" onclick="setSubjMode('multi')">多科目 (藝能科)</button>
             </div>
             
@@ -343,7 +352,7 @@
     }
 
     const classSel = document.getElementById('class-sel');
-    for(let i=1; i<=50; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = i; if(i === 1) opt.selected = true; classSel.appendChild(opt); }
+    for(let i=1; i<=50; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = i; if(i === 18) opt.selected = true; classSel.appendChild(opt); }
 
     function updateClock() { document.getElementById('clock').textContent = new Date().toTimeString().split(' ')[0]; }
     setInterval(updateClock, 1000); updateClock();
