@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>正德國中段考管理系統 - 中央聚焦滿版</title>
+    <title>正德國中段考管理系統 - 完美修復版</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         :root {
@@ -18,30 +18,19 @@
         body { background-color: var(--bg); color: var(--primary); width: 100vw; height: 100vh; overflow: hidden; display: flex; flex-direction: column; padding: 1vh 1.5vw; gap: 1.5vh; }
 
         /* 頂部標題 */
-        .main-header {
-            text-align: center; height: 6vh; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 2.8vw; font-weight: 900;
-        }
-        .header-select {
-            font-size: 2.5vw; font-weight: 900; border: none; background: #e2e8f0; border-radius: 8px; padding: 0 10px; cursor: pointer; color: var(--primary); outline: none;
-        }
+        .main-header { text-align: center; height: 6vh; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 2.8vw; font-weight: 900; }
+        .header-select { font-size: 2.5vw; font-weight: 900; border: none; background: #e2e8f0; border-radius: 8px; padding: 0 10px; cursor: pointer; color: var(--primary); outline: none; }
 
         /* 頂部資訊卡 */
         .top-row { display: flex; gap: 1.5vw; height: 10vh; }
-        .info-card { 
-            flex: 1; background: var(--card-bg); border-radius: 12px; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--border); 
-            border-bottom: 5px solid var(--secondary); position: relative;
-            display: flex; align-items: center; justify-content: center; 
-        }
-        
+        .info-card { flex: 1; background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 1px solid var(--border); border-bottom: 5px solid var(--secondary); display: flex; align-items: center; justify-content: center; position: relative; }
         .top-display-text { font-family: "Arial", "Microsoft JhengHei", sans-serif; font-size: 3.2vw; font-weight: 900; color: var(--primary); text-align: center; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
         .date-wrapper { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; }
-        .calendar-icon-btn { position: absolute; right: 2vw; font-size: 3vh; color: #94a3b8; pointer-events: none; }
         input[type="date"] { position: absolute; right: 1.5vw; width: 40px; height: 40px; opacity: 0; cursor: pointer; z-index: 10; }
+        .calendar-icon-btn { position: absolute; right: 2vw; font-size: 3vh; color: #94a3b8; pointer-events: none; }
 
-        /* 主區塊佈局 - 左:考程 / 中:提醒 / 右:統計+座位 */
+        /* 主區塊佈局 */
         .main-row { display: flex; gap: 1vw; flex: 1; min-height: 0; padding-bottom: 1vh; }
-        
         .schedule-part { flex: 3.6; }
         .center-reminder-part { flex: 4.2; display: flex; flex-direction: column; }
         .right-column-part { flex: 2.2; display: flex; flex-direction: column; gap: 1vh; }
@@ -50,47 +39,59 @@
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1vh; border-bottom: 2px solid var(--bg); padding-bottom: 1vh; }
         .card-title { font-size: 3vh; font-weight: 900; color: var(--secondary); }
 
-        /* ====== 左欄：考程表格 ====== */
+        /* 考程表格與多科目佈局 */
         table { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
-        th { font-size: 2.4vh; font-weight: 900; color: #64748b; text-align: center; padding-bottom: 1vh; }
-        td { position: relative; font-size: 4.5vh; font-weight: 900; text-align: center; vertical-align: middle; border-bottom: 1px solid var(--border); outline: none; padding: 0; }
-        .clickable-subject { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; transition: background-color 0.2s; user-select: none; }
+        th { font-size: 2.2vh; font-weight: 900; color: #64748b; text-align: center; padding-bottom: 1vh; }
+        td { position: relative; font-size: 4vh; font-weight: 900; text-align: center; vertical-align: middle; border-bottom: 1px solid var(--border); outline: none; padding: 0; }
+        
+        .subject-cell { cursor: pointer; padding: 0 !important; }
+        .subject-container { display: flex; width: 100%; height: 100%; align-items: stretch; justify-content: center; }
+        .subject-slot { flex: 1; display: flex; align-items: center; justify-content: center; font-size: clamp(2vh, 2.5vw, 4vh); line-height: 1.2; word-break: break-all; padding: 0.5vh; transition: background-color 0.2s; }
+        .subject-slot:not(:last-child) { border-right: 2px dashed rgba(0,0,0,0.15); }
 
-        /* ====== 中欄：提醒事項 ====== */
+        /* 注意事項 */
         .reminder-list { list-style: none; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 1.5vh; padding-right: 5px; margin-top: 1vh;}
         .reminder-item { background: #fef9c3; border-left: 8px solid #eab308; padding: 2vh 1.5vw; border-radius: 8px; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
         .reminder-text { flex: 1; font-size: 3.5vh; font-weight: 900; color: #854d0e; outline: none; line-height: 1.5; }
-        
         .del-btn { background: #fee2e2; color: #dc2626; border: none; width: 3.5vh; height: 3.5vh; border-radius: 6px; font-size: 2vh; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .add-btn { background: #059669; color: white; border: none; width: 3.5vh; height: 3.5vh; border-radius: 50%; font-size: 2.5vh; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-        /* ====== 右欄上：出缺席錄入 ====== */
-        .stats-horizontal-row { display: flex; gap: 0.5vw; margin-bottom: 1vh; }
+        /* 出缺席人數與座位表 */
         .stat-hz-box { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg); padding: 0.8vh; border-radius: 8px; }
-        .stat-label-hz { font-size: 1.6vh; color: #64748b; font-weight: bold; margin-bottom: 0.5vh;}
         .stat-num-input-hz { font-size: 4.5vh; font-weight: 900; border: none; width: 100%; text-align: center; outline: none; background: transparent; color: var(--primary); }
-
-        .absent-wrapper { background: var(--bg); padding: 1vh; border-radius: 8px; display: flex; flex-direction: column; align-items: center; }
-        .absent-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; width: 100%; min-height: 4vh; }
-        .absent-input { width: 45px; height: 35px; text-align: center; font-size: 2.8vh; font-weight: 900; border: 1px solid #cbd5e1; border-radius: 6px; color: #e11d48; background: #fff; outline: none; }
-
-        /* ====== 右欄下：座位表 (滿版優化) ====== */
-        /* 確保座位表卡片可以向下延伸填滿剩餘空間 */
         .seating-part { flex: 1; display: flex; flex-direction: column; }
-        /* 確保座位格子區塊撐滿剩餘高度 */
-        .seating-box { flex: 1; display: flex; align-items: stretch; justify-content: stretch; min-height: 0; margin-top: 0; }
+        .seating-box { flex: 1; display: flex; align-items: stretch; justify-content: stretch; min-height: 0; }
         .grid-engine { display: grid; gap: 4px; width: 100%; height: 100%; flex: 1; }
         .seat { background: #fcfdfe; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: clamp(14px, 1.8vw, 4vh); font-weight: 900; color: #475569; outline: none; }
 
-        /* ====== 彈出面板 Modal ====== */
+        /* 缺席座號 */
+        .absent-wrapper { background: var(--bg); padding: 1vh; border-radius: 8px; display: flex; flex-direction: column; align-items: center; }
+        .absent-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; width: 100%; min-height: 5vh; }
+        .absent-input { width: 65px; height: 50px; text-align: center; font-size: 4vh; font-weight: 900; border: 2px solid #cbd5e1; border-radius: 8px; color: #e11d48; background: #fff; outline: none; }
+        .absent-input:focus { border-color: #e11d48; background: #fff1f2; }
+
+        /* 科目選擇面板 */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 9999; }
-        .modal-content { background: #ffffff; padding: 4vh 4vw; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 60vw; max-width: 800px; }
-        .modal-title { font-size: 3.5vh; font-weight: 900; color: var(--primary); margin-bottom: 3vh; text-align: center; position: relative; }
-        .close-modal-btn { position: absolute; right: 0; top: 50%; transform: translateY(-50%); background: #f1f5f9; border: none; width: 4.5vh; height: 4.5vh; border-radius: 50%; font-size: 2.5vh; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; }
-        .modal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5vh; }
-        .modal-grid button:last-child { grid-column: 2; }
-        .subj-btn { font-size: 4.5vh; font-weight: 900; padding: 2vh 0; border-radius: 12px; border: 2px solid transparent; cursor: pointer; transition: transform 0.1s; }
+        .modal-content { background: #ffffff; padding: 4vh 4vw; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); width: 75vw; max-width: 900px; position: relative; }
+        .close-modal-btn { position: absolute; right: 2vw; top: 2vh; background: #f1f5f9; border: none; width: 4.5vh; height: 4.5vh; border-radius: 50%; font-size: 2.5vh; cursor: pointer; color: #64748b; display: flex; align-items: center; justify-content: center; }
+        .modal-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5vh; }
+        .subj-btn { font-size: 3.2vh; font-weight: 900; padding: 2vh 0; border-radius: 12px; border: 2px solid transparent; cursor: pointer; transition: transform 0.1s; }
         .subj-btn:active { transform: scale(0.95); }
+        
+        /* 多科目模式開關與預覽區 */
+        .mode-toggle { display: flex; justify-content: center; gap: 20px; margin-bottom: 2vh; }
+        .mode-btn { padding: 1.5vh 3vw; border-radius: 30px; border: 2px solid var(--border); font-weight: bold; font-size: 2.2vh; cursor: pointer; background: white; color: var(--primary); }
+        .mode-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); }
+        
+        .multi-preview-container { text-align: center; margin-bottom: 2vh; padding: 1.5vh; background: var(--bg); border-radius: 12px; display: none; }
+        .preview-title { font-size: 2vh; color: #64748b; font-weight: bold; margin-bottom: 0.5vh; }
+        .preview-list { font-size: 3.5vh; font-weight: 900; color: var(--primary); min-height: 4vh; }
+        .preview-controls { margin-top: 1.5vh; display: flex; justify-content: center; gap: 10px; }
+        .preview-btn { padding: 1vh 2vw; border-radius: 8px; font-weight: 900; font-size: 2vh; cursor: pointer; border: none; }
+
+        /* 刪除列按鈕特效 */
+        .row-del-btn { position: absolute; left: 4px; top: 50%; transform: translateY(-50%); background: #fee2e2; color: #dc2626; border: none; width: 2.5vh; height: 2.5vh; border-radius: 4px; font-size: 1.5vh; cursor: pointer; opacity: 0.2; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; }
+        .row-del-btn:hover { opacity: 1; }
 
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -112,30 +113,28 @@
                 <input type="date" id="date-picker">
             </div>
         </div>
-        <div class="info-card">
-            <div class="top-display-text" id="clock">00:00:00</div>
-        </div>
+        <div class="info-card"><div class="top-display-text" id="clock">00:00:00</div></div>
     </div>
 
     <div class="main-row">
-        
         <div class="card schedule-part">
             <div class="card-header">
                 <span class="card-title">今日考程</span>
-                <div style="font-size: 1.8vh; font-weight: bold; color: #94a3b8;">
-                    節次 <input type="number" id="input-periods" value="7" min="1" max="7" style="width:3.5vw; text-align:center; font-size: 1.8vh;">
-                    <button onclick="generateSchedule()" style="background:#334155; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-size: 1.6vh;">重設</button>
+                <div style="font-size: 1.4vh; font-weight: bold; color: #94a3b8; display: flex; gap: 10px; align-items: center;">
+                    從第 <input type="number" id="start-period" value="1" min="1" max="9" style="width:2.5vw; text-align:center;"> 節 
+                    到第 <input type="number" id="end-period" value="7" min="1" max="9" style="width:2.5vw; text-align:center;"> 節
+                    <button onclick="generateSchedule()" style="background:#334155; color:white; border:none; padding:4px 8px; border-radius:6px; cursor:pointer;">產生</button>
                 </div>
             </div>
             <table>
-                <thead><tr><th style="width:14%">節次</th><th style="width:40%">時間</th><th style="width:28%">科目</th><th style="width:18%">備註</th></tr></thead>
+                <thead><tr><th style="width:14%">節次</th><th style="width:36%">時間</th><th style="width:35%">科目</th><th style="width:15%">備註</th></tr></thead>
                 <tbody id="schedule-body"></tbody>
             </table>
         </div>
 
         <div class="card center-reminder-part">
             <div class="card-header">
-                <span class="card-title" style="color: #854d0e;"><i class="fa-solid fa-bullhorn" style="margin-right:8px;"></i>注意事項</span>
+                <span class="card-title" style="color: #854d0e;"><i class="fa-solid fa-bullhorn"></i> 注意事項</span>
                 <button class="add-btn" onclick="addReminder()">+</button>
             </div>
             <ul class="reminder-list" id="reminder-list">
@@ -147,92 +146,216 @@
                     <div class="reminder-text" contenteditable="true">2. 國文寫作測驗，請務必使用黑色原子筆</div>
                     <button class="del-btn" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
                 </li>
-                <li class="reminder-item">
-                    <div class="reminder-text" contenteditable="true">3. 手機、智慧型手錶請關機並收入書包</div>
-                    <button class="del-btn" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
-                </li>
             </ul>
         </div>
 
         <div class="right-column-part">
-            
-            <div class="card" style="flex: 0 0 auto; padding: 1vh 1vw;">
-                <div class="card-header" style="margin-bottom: 0.5vh; padding-bottom: 0.5vh;">
-                    <span class="card-title" style="font-size: 2.2vh;">出缺席人數</span>
-                </div>
-                <div class="stats-horizontal-row">
-                    <div class="stat-hz-box">
-                        <span class="stat-label-hz">應到人數</span>
-                        <input type="number" id="total-students" value="30" class="stat-num-input-hz" oninput="calcAbsent()">
-                    </div>
-                    <div class="stat-hz-box">
-                        <span class="stat-label-hz">實到人數</span>
-                        <input type="number" id="present-students" value="28" class="stat-num-input-hz" style="color: #059669;" oninput="calcAbsent()">
-                    </div>
+            <div class="card" style="padding: 1vh 1vw;">
+                <div class="card-header" style="margin-bottom:0.5vh;"><span class="card-title" style="font-size: 2.2vh;">出缺席人數</span></div>
+                <div style="display: flex; gap: 5px; margin-bottom: 1vh;">
+                    <div class="stat-hz-box"><span style="font-size:1.4vh; color:#64748b; font-weight:bold;">應到人數</span><input type="number" id="total-students" value="30" class="stat-num-input-hz" oninput="calcAbsent()"></div>
+                    <div class="stat-hz-box"><span style="font-size:1.4vh; color:#64748b; font-weight:bold;">實到人數</span><input type="number" id="present-students" value="28" class="stat-num-input-hz" style="color: #059669;" oninput="calcAbsent()"></div>
                 </div>
                 <div class="absent-wrapper">
-                    <div style="font-size: 1.6vh; font-weight: bold; color: #e11d48; margin-bottom: 0.5vh;">缺席座號</div>
+                    <div style="font-size: 1.6vh; font-weight: bold; color: #e11d48; text-align:center; margin-bottom:0.8vh;">缺席座號</div>
                     <div id="absent-inputs" class="absent-container"></div>
                 </div>
             </div>
 
             <div class="card seating-part" style="padding: 1vh 1vw;">
-                <div class="card-header" style="margin-bottom: 0.5vh; padding-bottom: 0.5vh;">
+                <div class="card-header" style="margin-bottom:0.5vh;">
                     <span class="card-title" style="font-size: 2.2vh;">座位表</span>
-                    <div style="font-size:1.4vh;">
-                        <input type="number" id="input-rows" value="6" style="width:2vw; text-align:center; font-size: 1.4vh;">×<input type="number" id="input-cols" value="6" style="width:2vw; text-align:center; font-size: 1.4vh;">
-                        <button onclick="generateGrid()" style="background:#334155; color:white; border:none; padding:4px 6px; border-radius:4px; cursor:pointer; font-size: 1.2vh;">生成</button>
+                    <div style="display: flex; align-items: center; gap: 5px; font-size:1.4vh;">
+                        <input type="number" id="input-rows" value="6" style="width:2.5vw; text-align:center;"> × 
+                        <input type="number" id="input-cols" value="6" style="width:2.5vw; text-align:center;">
+                        <button onclick="generateGrid()" style="background:#334155; color:white; border:none; padding:4px 10px; border-radius:6px; cursor:pointer; font-weight:bold;">產生</button>
                     </div>
                 </div>
-                <div style="text-align:center; font-size:1.4vh; color:#94a3b8; font-weight:bold; margin-bottom:0.5vh;">講台方向 ▲</div>
+                <div style="text-align:center; font-size:1.2vh; color:#94a3b8; font-weight:bold; margin-bottom:0.3vh;">講台 ▲</div>
                 <div class="seating-box"><div class="grid-engine" id="seating-container"></div></div>
             </div>
-
         </div>
     </div>
 
     <div id="subject-modal" class="modal-overlay">
         <div class="modal-content">
-            <div class="modal-title">選擇科目 <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button></div>
-            <div class="modal-grid">
-                <button class="subj-btn" style="background:#ffffff; color:#94a3b8; border-color:#e2e8f0;" onclick="confirmSubject('自習')">自習</button>
-                <button class="subj-btn" style="background:#fee2e2; color:#dc2626;" onclick="confirmSubject('國文')">國文</button>
-                <button class="subj-btn" style="background:#e0f2fe; color:#dc2626;" onclick="confirmSubject('英文')">英文</button>
-                <button class="subj-btn" style="background:#dcfce7; color:#dc2626;" onclick="confirmSubject('數學')">數學</button>
-                <button class="subj-btn" style="background:#f3e8ff; color:#dc2626;" onclick="confirmSubject('自然')">自然</button>
-                <button class="subj-btn" style="background:#ffedd5; color:#dc2626;" onclick="confirmSubject('社會')">社會</button>
-                <button class="subj-btn" style="background:#fef9c3; color:#854d0e;" onclick="confirmSubject('作文')">作文</button>
+            <button class="close-modal-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="mode-toggle">
+                <button id="mode-single" class="mode-btn active" onclick="setSubjMode('single')">單科目 (段考、模考)</button>
+                <button id="mode-multi" class="mode-btn" onclick="setSubjMode('multi')">多科目 (藝能科)</button>
             </div>
+            
+            <div id="multi-preview-container" class="multi-preview-container">
+                <div class="preview-title">已選定組合：</div>
+                <div id="multi-preview-list" class="preview-list">(尚未選擇)</div>
+                <div class="preview-controls">
+                    <button class="preview-btn" style="background: #fff1f2; color: #e11d48; border: 1px solid #e11d48;" onclick="clearMulti()">重新選擇</button>
+                    <button class="preview-btn" style="background: #059669; color: white;" onclick="applySubjects()">完成設定</button>
+                </div>
+            </div>
+
+            <div class="modal-title" id="modal-tip" style="font-size: 2.5vh; color:#64748b;">請點擊下方科目：</div>
+            <div class="modal-grid" id="modal-buttons"></div>
         </div>
     </div>
 
 <script>
-    // 初始化班級
-    const classSel = document.getElementById('class-sel');
-    for(let i=1; i<=50; i++) {
-        let opt = document.createElement('option');
-        opt.value = i; opt.innerText = i;
-        if(i === 18) opt.selected = true;
-        classSel.appendChild(opt);
+    const defaultTimes = { 1: "08:20-09:05", 2: "09:15-10:00", 3: "10:10-10:55", 4: "11:05-11:50", 5: "13:00-13:45", 6: "13:55-14:40", 7: "15:00-15:45", 8: "15:55-16:40", 9: "16:50-17:35" };
+    
+    const subjectColors = {
+        "自習": { bg: "#ffffff", fg: "#94a3b8" },
+        "國文": { bg: "#fee2e2", fg: "#dc2626" },
+        "英文": { bg: "#e0f2fe", fg: "#dc2626" },
+        "數學": { bg: "#dcfce7", fg: "#dc2626" },
+        "自然": { bg: "#f3e8ff", fg: "#dc2626" },
+        "社會": { bg: "#ffedd5", fg: "#dc2626" },
+        "作文": { bg: "#fef9c3", fg: "#854d0e" },
+        "藝文": { bg: "#fdf2f8", fg: "#db2777" },
+        "綜合": { bg: "#ecfdf5", fg: "#059669" },
+        "健體": { bg: "#fff7ed", fg: "#ea580c" },
+        "科技": { bg: "#f0f9ff", fg: "#0284c7" }
+    };
+
+    let currentEditingCell = null;
+    let subjMode = 'single'; 
+    let tempSubjects = [];
+
+    function initModal() {
+        const grid = document.getElementById('modal-buttons');
+        grid.innerHTML = '';
+        Object.keys(subjectColors).forEach(name => {
+            const btn = document.createElement('button');
+            btn.className = 'subj-btn';
+            btn.innerText = name;
+            btn.style.backgroundColor = subjectColors[name].bg;
+            btn.style.color = subjectColors[name].fg;
+            btn.onclick = () => selectSubject(name);
+            grid.appendChild(btn);
+        });
     }
 
-    function updateClock() {
-        document.getElementById('clock').textContent = new Date().toTimeString().split(' ')[0];
+    function openModal(cellTd) {
+        currentEditingCell = cellTd;
+        document.getElementById('subject-modal').style.display = 'flex';
+        setSubjMode('single'); 
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+
+    function closeModal() {
+        document.getElementById('subject-modal').style.display = 'none';
+        currentEditingCell = null;
+    }
+
+    function setSubjMode(mode) {
+        subjMode = mode;
+        tempSubjects = []; 
+        document.getElementById('mode-single').classList.toggle('active', mode === 'single');
+        document.getElementById('mode-multi').classList.toggle('active', mode === 'multi');
+        
+        if (mode === 'multi') {
+            document.getElementById('modal-tip').style.display = 'none';
+            document.getElementById('multi-preview-container').style.display = 'block';
+            updatePreview();
+        } else {
+            document.getElementById('modal-tip').style.display = 'block';
+            document.getElementById('multi-preview-container').style.display = 'none';
+        }
+    }
+
+    function selectSubject(name) {
+        if (subjMode === 'single') {
+            tempSubjects = [name];
+            applySubjects();
+        } else {
+            tempSubjects.push(name);
+            updatePreview();
+        }
+    }
+
+    function clearMulti() {
+        tempSubjects = [];
+        updatePreview();
+    }
+
+    function updatePreview() {
+        const preview = document.getElementById('multi-preview-list');
+        preview.innerText = tempSubjects.length === 0 ? "(尚未選擇)" : tempSubjects.join(" + ");
+    }
+
+    function applySubjects() {
+        if (tempSubjects.length === 0 && subjMode === 'multi') {
+            alert('請至少選擇一個科目！');
+            return;
+        }
+        if (!currentEditingCell) return;
+
+        let html = '<div class="subject-container">';
+        tempSubjects.forEach(name => {
+            const color = subjectColors[name];
+            const fw = (name === '自習') ? 'bold' : '900';
+            html += `<div class="subject-slot" style="background-color:${color.bg}; color:${color.fg}; font-weight:${fw};">${name}</div>`;
+        });
+        html += '</div>';
+
+        currentEditingCell.innerHTML = html;
+        closeModal();
+    }
+
+    function generateSchedule() {
+        const start = parseInt(document.getElementById('start-period').value);
+        const end = parseInt(document.getElementById('end-period').value);
+        const body = document.getElementById('schedule-body');
+        body.innerHTML = '';
+
+        if(start > end) {
+            alert("起始節次不能大於結束節次喔！");
+            return;
+        }
+
+        for (let periodNum = start; periodNum <= end; periodNum++) {
+            const row = document.createElement('tr');
+            
+            const td1 = document.createElement('td'); 
+            td1.style.position = "relative";
+            td1.innerHTML = `
+                <span contenteditable="true">${periodNum}</span>
+                <button class="row-del-btn" onclick="this.closest('tr').remove()" title="刪除此節"><i class="fa-solid fa-trash-can"></i></button>
+            `;
+            
+            const td2 = document.createElement('td'); 
+            td2.contentEditable = "true"; 
+            td2.innerText = defaultTimes[periodNum] || "";
+            
+            const td3 = document.createElement('td'); 
+            td3.className = "subject-cell";
+            td3.onclick = function() { openModal(this); };
+            td3.innerHTML = `<div class="subject-container"><div class="subject-slot" style="background-color:#ffffff; color:#94a3b8; font-weight:bold;">自習</div></div>`;
+            
+            const td4 = document.createElement('td'); 
+            td4.contentEditable = "true";
+            
+            row.appendChild(td1);
+            row.appendChild(td2);
+            row.appendChild(td3);
+            row.appendChild(td4);
+            body.appendChild(row);
+        }
+    }
+
+    const classSel = document.getElementById('class-sel');
+    for(let i=1; i<=50; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = i; if(i === 1) opt.selected = true; classSel.appendChild(opt); }
+
+    function updateClock() { document.getElementById('clock').textContent = new Date().toTimeString().split(' ')[0]; }
+    setInterval(updateClock, 1000); updateClock();
 
     const days = ['(日)', '(一)', '(二)', '(三)', '(四)', '(五)', '(六)'];
     const picker = document.getElementById('date-picker');
     const display = document.getElementById('date-text');
     picker.onchange = function() {
-        if(!this.value) return;
-        const d = new Date(this.value);
+        if(!this.value) return; const d = new Date(this.value);
         display.textContent = `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}${days[d.getDay()]}`;
     };
-    const today = new Date();
-    picker.value = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-    picker.onchange();
+    picker.valueAsDate = new Date(); picker.onchange();
 
     function calcAbsent() {
         const total = parseInt(document.getElementById('total-students').value) || 0;
@@ -244,47 +367,6 @@
             let input = document.createElement('input');
             input.type = 'number'; input.className = 'absent-input';
             container.appendChild(input);
-        }
-    }
-
-    const timeTable = { 1: "08:20-09:05", 2: "09:15-10:00", 3: "10:10-10:55", 4: "11:05-11:50", 5: "13:00-13:45", 6: "13:55-14:40", 7: "15:00-15:45" };
-    const subjectColors = {
-        "自習": { bg: "#ffffff", fg: "#94a3b8" },
-        "國文": { bg: "#fee2e2", fg: "#dc2626" },
-        "英文": { bg: "#e0f2fe", fg: "#dc2626" },
-        "數學": { bg: "#dcfce7", fg: "#dc2626" },
-        "自然": { bg: "#f3e8ff", fg: "#dc2626" },
-        "社會": { bg: "#ffedd5", fg: "#dc2626" },
-        "作文": { bg: "#fef9c3", fg: "#854d0e" }
-    };
-
-    let currentEditingCell = null; 
-    function openModal(cell) { currentEditingCell = cell; document.getElementById('subject-modal').style.display = 'flex'; }
-    function closeModal() { document.getElementById('subject-modal').style.display = 'none'; }
-    function confirmSubject(name) {
-        if(currentEditingCell) {
-            const color = subjectColors[name];
-            currentEditingCell.innerHTML = `${name} <i class="fa-solid fa-caret-down" style="position:absolute; right:10px; font-size:2vh; color:#94a3b8; opacity:0.5;"></i>`;
-            currentEditingCell.style.backgroundColor = color.bg;
-            currentEditingCell.style.color = color.fg;
-            currentEditingCell.style.fontWeight = (name === "自習") ? "bold" : "900";
-        }
-        closeModal();
-    }
-
-    function generateSchedule() {
-        const count = document.getElementById('input-periods').value;
-        const body = document.getElementById('schedule-body');
-        body.innerHTML = '';
-        for(let i = 1; i <= count; i++) {
-            const row = document.createElement('tr');
-            const td1 = document.createElement('td'); td1.innerText = i;
-            const td2 = document.createElement('td'); td2.contentEditable = "true"; td2.innerText = timeTable[i] || "";
-            const td3 = document.createElement('td'); td3.className = "clickable-subject"; td3.onclick = function() { openModal(this); };
-            const td4 = document.createElement('td'); td4.contentEditable = "true";
-            row.appendChild(td1); row.appendChild(td2); row.appendChild(td3); row.appendChild(td4);
-            body.appendChild(row);
-            currentEditingCell = td3; confirmSubject('自習');
         }
     }
 
@@ -304,13 +386,12 @@
 
     function addReminder() {
         const list = document.getElementById('reminder-list');
-        const li = document.createElement('li');
-        li.className = 'reminder-item';
-        li.innerHTML = `<div class="reminder-text" contenteditable="true">${list.children.length + 1}. 點擊此處輸入新提醒</div><button class="del-btn" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>`;
+        const li = document.createElement('li'); li.className = 'reminder-item';
+        li.innerHTML = `<div class="reminder-text" contenteditable="true">${list.children.length + 1}. 新提醒</div><button class="del-btn" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>`;
         list.appendChild(li);
-        list.scrollTop = list.scrollHeight;
     }
 
+    initModal();
     generateSchedule();
     generateGrid();
     calcAbsent();
